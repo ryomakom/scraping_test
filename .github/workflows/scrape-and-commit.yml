@@ -2,7 +2,7 @@ name: Scrape and Commit
 
 on:
   schedule:
-    - cron: '50 12 * * *' # 毎日15時10分に実行
+    - cron: '55 12 * * *' # 毎日15時10分に実行
   push:
     branches:
       - main
@@ -25,7 +25,8 @@ jobs:
       run: Rscript -e 'install.packages("renv")'
 
     - name: Restore R environment
-      run: Rscript -e 'tryCatch(renv::restore(), error = function(e) {install.packages(c("jsonlite", "rvest", "dplyr"))})'
+      run: |
+        Rscript -e 'renv::restore()' || Rscript -e 'install.packages(c("rvest", "dplyr", "httr", "xml2", "jsonlite", "lubridate", "tidyverse"))'
 
     - name: Run scraping script
       run: Rscript scrape.R
