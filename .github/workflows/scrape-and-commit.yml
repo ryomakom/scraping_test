@@ -2,7 +2,7 @@ name: Scrape and Commit
 
 on:
   schedule:
-    - cron: '10 13 * * *' # 毎日15時10分に実行
+    - cron: '15 13 * * *' # 毎日15時10分に実行
   push:
     branches:
       - main
@@ -25,13 +25,17 @@ jobs:
       run: Rscript -e 'install.packages("renv")'
 
     - name: Restore R environment
-      run: |
-        Rscript -e 'renv::restore()' || Rscript -e 'install.packages(c("rvest", "dplyr", "httr", "xml2", "jsonlite", "lubridate", "tidyverse"))'
+      run: Rscript -e 'renv::restore()'
 
     - name: Install additional packages
-      if: failure()
       run: |
-        Rscript -e 'install.packages(c("rvest", "dplyr", "httr", "xml2", "jsonlite", "lubridate", "tidyverse"))'
+        Rscript -e 'if (!requireNamespace("rvest", quietly = TRUE)) install.packages("rvest")'
+        Rscript -e 'if (!requireNamespace("dplyr", quietly = TRUE)) install.packages("dplyr")'
+        Rscript -e 'if (!requireNamespace("httr", quietly = TRUE)) install.packages("httr")'
+        Rscript -e 'if (!requireNamespace("xml2", quietly = TRUE)) install.packages("xml2")'
+        Rscript -e 'if (!requireNamespace("jsonlite", quietly = TRUE)) install.packages("jsonlite")'
+        Rscript -e 'if (!requireNamespace("lubridate", quietly = TRUE)) install.packages("lubridate")'
+        Rscript -e 'if (!requireNamespace("tidyverse", quietly = TRUE)) install.packages("tidyverse")'
 
     - name: Run scraping script
       run: Rscript scrape.R
